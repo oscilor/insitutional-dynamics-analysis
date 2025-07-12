@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MST326 Fluid Dynamics Model for Institutional Analysis</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0,0,0,0.8);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+        .visualization {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,255,0.3);
+        }
+        canvas {
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            display: block;
+            margin: 10px auto;
+            background: rgba(0,0,0,0.9);
+        }
+        .equation {
+            background: rgba(0,100,100,0.3);
+            padding: 15px;
+            border-left: 4px solid #00ffff;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+        }
+        .insight {
+            background: rgba(100,0,100,0.3);
+            padding: 15px;
+            border-left: 4px solid #ff00ff;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #ff00ff, #ff0080);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MST326 Fluid Dynamics Model for Institutional Analysis</h1>
+        <p style="text-align: center; font-style: italic;">Mathematical visualization of institutional flow patterns and critical transitions</p>
+
+        <div class="visualization">
+            <h2>1. Flow Around Institutional Obstacles</h2>
+            <div class="equation">
+                Stream Function: ψ = Ur sin θ (r² - a²)/(r² + a²)<br>
+                Velocity Field: u = x²i + 2x(t-y)j
+            </div>
+            <canvas id="flowCanvas" width="800" height="400"></canvas>
+            <div class="insight">
+                <strong>Institutional Insight:</strong> Information flows fastest around the "sides" of bureaucratic structures. 
+                Stagnation points occur at the front and back where processing stops completely.
+            </div>
+        </div>
+
+        <div class="visualization">
+            <h2>2. Critical Flow Transitions (Hydraulic Jump Model)</h2>
+            <div class="equation">
+                Upstream: h ≈ 0.65m, v ≈ 0.15 m/s (Deep, Slow Processing)<br>
+                Downstream: h ≈ 0.02m, v ≈ 5 m/s (Shallow, Fast Crisis Response)<br>
+                Velocity Ratio: 33:1 speed difference
+            </div>
+            <canvas id="hydraulicCanvas" width="800" height="300"></canvas>
+            <div class="insight">
+                <strong>Critical Discovery:</strong> Institutions cannot simultaneously maintain deep analysis AND rapid response. 
+                Energy conservation forces a trade-off between thoroughness and speed.
+            </div>
+        </div>
+
+        <div class="equation">
+            <strong>Mathematical Framework:</strong><br>
+            Reynolds Number: Re = (Organizational Inertia × Speed × Scale) / Bureaucratic Friction<br>
+            Froude Number: Fr = Processing Speed / √(Institutional Depth × Acceleration)<br>
+            Critical Transitions: Mathematical prediction of regime changes
+        </div>
+
+        <div class="insight">
+            <strong>Professional Mathematical Evidence:</strong><br>
+            • MST326 TMA Performance: Distinction-level competency in graduate fluid mechanics<br>
+            • Novel Application: First systematic use of fluid mechanics for institutional analysis<br>
+            • Quantitative Framework: Engineering tools for institutional behavior prediction<br>
+            • Academic Credibility: Professional-level mathematical techniques
+        </div>
+    </div>
+
+    <script>
+        // Mathematical visualization of institutional flow patterns
+        
+        function drawFlowField() {
+            const canvas = document.getElementById('flowCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw obstacle (institution)
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.arc(400, 200, 60, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('INSTITUTION', 400, 205);
+
+            // Draw streamlines around obstacle
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 2;
+            
+            for (let y = 50; y < canvas.height; y += 40) {
+                ctx.beginPath();
+                let x = 50;
+                ctx.moveTo(x, y);
+                
+                while (x < canvas.width - 50) {
+                    let dx = x - 400;
+                    let dy = y - 200;
+                    let r = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (r > 70) {
+                        let u = 1 + (60*60/(r*r)) * (dx*dx/r/r - dy*dy/r/r);
+                        let v = (60*60/(r*r)) * (2*dx*dy/r/r);
+                        
+                        x += u * 2;
+                        y += v * 2;
+                        ctx.lineTo(x, y);
+                    } else {
+                        x += 80;
+                        ctx.moveTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+
+            // Mark stagnation points
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(340, 200, 5, 0, 2 * Math.PI);
+            ctx.arc(460, 200, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '10px Arial';
+            ctx.fillText('Stagnation Points', 400, 240);
+        }
+
+        function drawHydraulicJump() {
+            const canvas = document.getElementById('hydraulicCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw channel bottom
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 280);
+            ctx.lineTo(canvas.width, 280);
+            ctx.stroke();
+
+            // Draw upstream flow (deep, slow)
+            ctx.fillStyle = 'rgba(0, 150, 255, 0.7)';
+            ctx.fillRect(0, 100, 300, 180);
+            
+            // Draw downstream flow (shallow, fast)
+            ctx.fillStyle = 'rgba(0, 255, 150, 0.7)';
+            ctx.fillRect(350, 230, 450, 50);
+
+            // Draw transition zone
+            ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
+            ctx.beginPath();
+            ctx.moveTo(300, 100);
+            ctx.lineTo(350, 230);
+            ctx.lineTo(350, 280);
+            ctx.lineTo(300, 280);
+            ctx.closePath();
+            ctx.fill();
+
+            // Labels
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Arial';
+            ctx.fillText('Deep, Slow Processing', 80, 50);
+            ctx.fillText('33:1 Speed Difference', 250, 130);
+            ctx.fillText('Shallow, Fast Response', 450, 50);
+        }
+
+        // Initialize visualizations
+        window.onload = function() {
+            drawFlowField();
+            drawHydraulicJump();
+        };
+    </script>
+</body>
+</html>
