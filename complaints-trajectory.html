@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints Trajectory: a + bx Model</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #2c1810; color: white; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        h1 { text-align: center; color: #ffaa00; }
+        canvas { border: 2px solid #ffaa00; display: block; margin: 20px auto; background: black; }
+        .equation { background: rgba(139,69,19,0.4); padding: 15px; margin: 15px 0; border-radius: 8px; }
+        .examples { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .example { background: rgba(25,25,25,0.8); padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complaints Trajectory: Mathematical Analysis</h1>
+        
+        <div class="equation">
+            <h3>f(x) = a + bx</h3>
+            <p><strong>a</strong> = automatic acknowledgement<br>
+            <strong>b</strong> = "but" factor (institutional malfunction constant)<br>
+            <strong>x</strong> = complaint magnitude</p>
+        </div>
+
+        <canvas id="trajectoryCanvas" width="800" height="400"></canvas>
+
+        <div class="examples">
+            <div class="example">
+                <h4>b = 0 (Complete Dismissal)</h4>
+                <p>"We acknowledge your complaint <strong>but</strong> [silence]"<br>
+                <strong>Result:</strong> Immediate termination</p>
+            </div>
+            <div class="example">
+                <h4>b > 1 (Escalation)</h4>
+                <p>"We acknowledge your complaint, <strong>but</strong> this requires full investigation"<br>
+                <strong>Result:</strong> Exponential growth</p>
+            </div>
+            <div class="example">
+                <h4>b = -1 (Oscillation)</h4>
+                <p>"It's closed" → "It's reopened" → "It's closed"<br>
+                <strong>Result:</strong> Perfect ping-pong cycle</p>
+            </div>
+            <div class="example">
+                <h4>NHS Grampian Evidence</h4>
+                <p>Dr Davidson → "No follow-up" → Case closed<br>
+                <strong>Classification:</strong> b ≈ 0 pattern</p>
+            </div>
+        </div>
+
+        <div class="equation">
+            <h3>Mathematical Results</h3>
+            <p><strong>Fixed Point:</strong> x* = a/(1-b)<br>
+            <strong>Stability:</strong> |b| < 1 for convergence<br>
+            <strong>Revolutionary Insight:</strong> First mathematical model of institutional complaint processing</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('trajectoryCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function drawTrajectories() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw axes
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(50, 350);
+            ctx.lineTo(750, 350);
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 350);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Arial';
+            ctx.fillText('Iteration', 350, 380);
+            ctx.fillText('Complaint Magnitude', 10, 30);
+            
+            // Draw different trajectory types
+            const types = [
+                {a: 0.5, b: 0, color: '#32cd32', label: 'Dismissal (b=0)', start: 100},
+                {a: 0.5, b: 0.7, color: '#4ecdc4', label: 'Convergent (b=0.7)', start: 200},
+                {a: 0.5, b: 1.2, color: '#ff4500', label: 'Divergent (b=1.2)', start: 350},
+                {a: 0.5, b: -1, color: '#ffd700', label: 'Oscillation (b=-1)', start: 500}
+            ];
+            
+            types.forEach(type => {
+                ctx.strokeStyle = type.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                let x = 1; // Initial complaint
+                for (let n = 0; n < 15; n++) {
+                    const canvasX = type.start + n * 15;
+                    const canvasY = 350 - (x + 2) * 50;
+                    
+                    if (n === 0) ctx.moveTo(canvasX, canvasY);
+                    else ctx.lineTo(canvasX, canvasY);
+                    
+                    x = type.a + type.b * x;
+                    if (Math.abs(x) > 4) break;
+                }
+                ctx.stroke();
+                
+                // Label
+                ctx.fillStyle = type.color;
+                ctx.font = '10px Arial';
+                ctx.fillText(type.label, type.start, 30);
+            });
+        }
+        
+        drawTrajectories();
+    </script>
+</body>
+</html>
