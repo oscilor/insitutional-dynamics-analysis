@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbital Dynamics: Time Evolution of the Three-Stabilizer System</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(0,0,0,0.85);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #00ffff;
+            text-shadow: 0 0 15px rgba(0,255,255,0.7);
+        }
+        .orbital-system {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .phase-space {
+            background: rgba(0,50,100,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #00ffff;
+        }
+        canvas {
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            display: block;
+            margin: 10px auto;
+            background: rgba(0,0,0,0.95);
+        }
+        .parameter-controls {
+            background: rgba(100,0,100,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ff00ff;
+            margin: 20px 0;
+        }
+        .control-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        label {
+            color: #00ffff;
+            font-weight: bold;
+            min-width: 120px;
+        }
+        input[type="range"] {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .value-display {
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
+            min-width: 80px;
+            text-align: center;
+            color: #ffaa00;
+            border: 1px solid #daa520;
+        }
+        button {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #ff00ff, #ff0080);
+            color: white;
+        }
+        .equation-box {
+            background: rgba(0,100,100,0.3);
+            padding: 15px;
+            border-left: 4px solid #00ffff;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-radius: 8px;
+        }
+        .insight-box {
+            background: rgba(100,50,0,0.3);
+            padding: 15px;
+            border-left: 4px solid #ffaa00;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .thyroid-status {
+            background: rgba(255,0,0,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #ff6666;
+        }
+        .time-series {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .oscillator {
+            background: rgba(0,0,50,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #6666ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Orbital Dynamics: Time Evolution of the Three-Stabilizer System</h1>
+        <p style="text-align: center; font-style: italic;">Mathematical modeling of personal stability using MS327 dynamical systems theory</p>
+
+        <div class="equation-box">
+            <strong>Core Mathematical Framework:</strong><br>
+            ẋ₁ = f₁(x₁, x₂, x₃, a, t) &nbsp;&nbsp; (Study/Intellectual Engagement)<br>
+            ẋ₂ = f₂(x₁, x₂, x₃, a, t) &nbsp;&nbsp; (Physical Activity/Cycling)<br>
+            ẋ₃ = f₃(x₁, x₂, x₃, a, t) &nbsp;&nbsp; (Social Networking)<br>
+            Where: a = thyroid parameter (control variable), t = seasonal time
+        </div>
+
+        <div class="thyroid-status">
+            <strong>Thyroid as Control Parameter 'a':</strong> 
+            Current medication: 112.5μg levothyroxine (stabilizing)
+            <br>System operating at reduced capacity during parameter adjustment
+        </div>
+
+        <div class="orbital-system">
+            <div class="phase-space">
+                <h3>Phase Space Evolution</h3>
+                <canvas id="phaseCanvas" width="500" height="400"></canvas>
+            </div>
+            
+            <div class="phase-space">
+                <h3>Parameter Space (Ricker Model)</h3>
+                <canvas id="rickerCanvas" width="500" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="parameter-controls">
+            <h3>System Parameters</h3>
+            <div class="control-group">
+                <label>Thyroid Level (a):</label>
+                <input type="range" id="thyroidSlider" min="75" max="150" value="112.5" step="12.5">
+                <div class="value-display" id="thyroidValue">112.5</div>
+            </div>
+            <div class="control-group">
+                <label>Activity Frequency:</label>
+                <input type="range" id="frequencySlider" min="7" max="30" value="14" step="1">
+                <div class="value-display" id="freqValue">14</div>
+            </div>
+            <div class="control-group">
+                <label>Coupling Strength:</label>
+                <input type="range" id="couplingSlider" min="0" max="1" value="0.3" step="0.1">
+                <div class="value-display" id="couplingValue">0.3</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="startEvolution()">Start Evolution</button>
+            <button onclick="pauseEvolution()">Pause</button>
+            <button onclick="resetSystem()">Reset System</button>
+        </div>
+
+        <div class="time-series">
+            <div class="oscillator">
+                <h4>Study Oscillator</h4>
+                <canvas id="studyCanvas" width="300" height="200"></canvas>
+                <div>Status: M337 Complete (100%)</div>
+            </div>
+            <div class="oscillator">
+                <h4>Physical Activity</h4>
+                <canvas id="physicalCanvas" width="300" height="200"></canvas>
+                <div>Status: Cycling Optimization</div>
+            </div>
+            <div class="oscillator">
+                <h4>Social Networking</h4>
+                <canvas id="socialCanvas" width="300" height="200"></canvas>
+                <div>Status: Edinburgh Policy Development</div>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <strong>Critical Findings from MS327 Analysis:</strong><br>
+            • <strong>Period Doubling Route to Chaos:</strong> Frequency drops from fortnightly → monthly → chaotic<br>
+            • <strong>Sensitive Dependence:</strong> Small changes in thyroid levels dramatically affect system stability<br>
+            • <strong>Seasonal Coupling:</strong> Winter favors study-dominated orbits, Summer enables cycling optimization<br>
+            • <strong>Three-Stabilizer Requirement:</strong> All three oscillators must maintain ≈14-day frequency for stability
+        </div>
+    </div>
+
+    <script>
+        let animationId;
+        let time = 0;
+        let isRunning = false;
+        
+        let thyroidLevel = 112.5;
+        let frequency = 14;
+        let coupling = 0.3;
+        
+        let study = { phase: 0, amplitude: 1 };
+        let physical = { phase: Math.PI/3, amplitude: 0.8 };
+        let social = { phase: 2*Math.PI/3, amplitude: 0.6 };
+
+        const phaseCtx = document.getElementById('phaseCanvas').getContext('2d');
+        const rickerCtx = document.getElementById('rickerCanvas').getContext('2d');
+        const studyCtx = document.getElementById('studyCanvas').getContext('2d');
+        const physicalCtx = document.getElementById('physicalCanvas').getContext('2d');
+        const socialCtx = document.getElementById('socialCanvas').getContext('2d');
+
+        function updateParameters() {
+            thyroidLevel = parseFloat(document.getElementById('thyroidSlider').value);
+            frequency = parseFloat(document.getElementById('frequencySlider').value);
+            coupling = parseFloat(document.getElementById('couplingSlider').value);
+            
+            document.getElementById('thyroidValue').textContent = thyroidLevel;
+            document.getElementById('freqValue').textContent = frequency;
+            document.getElementById('couplingValue').textContent = coupling;
+            
+            drawPhaseSpace();
+            drawRickerBifurcation();
+        }
+
+        function drawPhaseSpace() {
+            phaseCtx.clearRect(0, 0, 500, 400);
+            
+            const centerX = 250, centerY = 200;
+            
+            // Draw stability region
+            phaseCtx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+            phaseCtx.strokeStyle = '#00ff00';
+            phaseCtx.lineWidth = 2;
+            phaseCtx.beginPath();
+            phaseCtx.arc(centerX, centerY, 150, 0, 2 * Math.PI);
+            phaseCtx.fill();
+            phaseCtx.stroke();
+            
+            // Draw current system state
+            const x1 = study.amplitude * Math.cos(study.phase) * 100 + centerX;
+            const y1 = study.amplitude * Math.sin(study.phase) * 100 + centerY;
+            const x2 = physical.amplitude * Math.cos(physical.phase) * 100 + centerX;
+            const y2 = physical.amplitude * Math.sin(physical.phase) * 100 + centerY;
+            const x3 = social.amplitude * Math.cos(social.phase) * 100 + centerX;
+            const y3 = social.amplitude * Math.sin(social.phase) * 100 + centerY;
+            
+            // Draw trajectory
+            phaseCtx.strokeStyle = '#00ffff';
+            phaseCtx.lineWidth = 2;
+            phaseCtx.beginPath();
+            phaseCtx.moveTo(x1, y1);
+            phaseCtx.lineTo(x2, y2);
+            phaseCtx.lineTo(x3, y3);
+            phaseCtx.closePath();
+            phaseCtx.stroke();
+            
+            // Draw oscillators
+            phaseCtx.fillStyle = '#ff6666';
+            phaseCtx.beginPath();
+            phaseCtx.arc(x1, y1, 8, 0, 2 * Math.PI);
+            phaseCtx.fill();
+            
+            phaseCtx.fillStyle = '#66ff66';
+            phaseCtx.beginPath();
+            phaseCtx.arc(x2, y2, 8, 0, 2 * Math.PI);
+            phaseCtx.fill();
+            
+            phaseCtx.fillStyle = '#6666ff';
+            phaseCtx.beginPath();
+            phaseCtx.arc(x3, y3, 8, 0, 2 * Math.PI);
+            phaseCtx.fill();
+            
+            phaseCtx.fillStyle = 'white';
+            phaseCtx.font = '12px Arial';
+            phaseCtx.fillText('Study', x1 + 10, y1);
+            phaseCtx.fillText('Physical', x2 + 10, y2);
+            phaseCtx.fillText('Social', x3 + 10, y3);
+        }
+
+        function drawRickerBifurcation() {
+            rickerCtx.clearRect(0, 0, 500, 400);
+            
+            const r = 1.5 + (30 - frequency) * 0.1;
+            
+            // Draw bifurcation diagram
+            for (let rVal = 1; rVal <= 3.5; rVal += 0.01) {
+                const x = 50 + (rVal - 1) * 160;
+                
+                let state = 0.5;
+                for (let i = 0; i < 1000; i++) {
+                    state = state * Math.exp(rVal * (1 - state));
+                }
+                
+                for (let i = 0; i < 100; i++) {
+                    state = state * Math.exp(rVal * (1 - state));
+                    const y = 350 - state * 200;
+                    
+                    rickerCtx.fillStyle = rVal < 3 ? '#00ff00' : '#ff0000';
+                    if (Math.abs(rVal - r) < 0.05) {
+                        rickerCtx.fillStyle = '#ffff00';
+                    }
+                    rickerCtx.fillRect(x, y, 1, 1);
+                }
+            }
+            
+            // Current parameter line
+            const currentX = 50 + (r - 1) * 160;
+            rickerCtx.strokeStyle = '#ffff00';
+            rickerCtx.lineWidth = 3;
+            rickerCtx.beginPath();
+            rickerCtx.moveTo(currentX, 50);
+            rickerCtx.lineTo(currentX, 350);
+            rickerCtx.stroke();
+            
+            rickerCtx.fillStyle = 'white';
+            rickerCtx.font = '12px Arial';
+            rickerCtx.fillText('r = ' + r.toFixed(1), currentX - 20, 40);
+        }
+
+        function drawTimeSeries(ctx, oscillator, color) {
+            ctx.clearRect(0, 0, 300, 200);
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let t = 0; t < 300; t++) {
+                const phase = oscillator.phase + t * 0.05;
+                const y = 100 + oscillator.amplitude * Math.sin(phase) * 80;
+                
+                if (t === 0) ctx.moveTo(t, y);
+                else ctx.lineTo(t, y);
+            }
+            ctx.stroke();
+            
+            const currentY = 100 + oscillator.amplitude * Math.sin(oscillator.phase) * 80;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(250, currentY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        function evolutionStep() {
+            if (!isRunning) return;
+            
+            time += 0.1;
+            
+            const dt = 0.05;
+            const baseFreq = 2 * Math.PI / frequency;
+            const thyroidStability = Math.exp(-(thyroidLevel - 112.5) * (thyroidLevel - 112.5) / 1000);
+            
+            study.phase += baseFreq * dt * thyroidStability;
+            physical.phase += baseFreq * dt * thyroidStability;
+            social.phase += baseFreq * dt * thyroidStability;
+            
+            drawPhaseSpace();
+            drawTimeSeries(studyCtx, study, '#ff6666');
+            drawTimeSeries(physicalCtx, physical, '#66ff66');
+            drawTimeSeries(socialCtx, social, '#6666ff');
+            
+            animationId = requestAnimationFrame(evolutionStep);
+        }
+
+        function startEvolution() {
+            isRunning = true;
+            evolutionStep();
+        }
+
+        function pauseEvolution() {
+            isRunning = false;
+            if (animationId) cancelAnimationFrame(animationId);
+        }
+
+        function resetSystem() {
+            pauseEvolution();
+            time = 0;
+            study.phase = 0;
+            physical.phase = Math.PI/3;
+            social.phase = 2*Math.PI/3;
+            updateParameters();
+        }
+
+        document.getElementById('thyroidSlider').addEventListener('input', updateParameters);
+        document.getElementById('frequencySlider').addEventListener('input', updateParameters);
+        document.getElementById('couplingSlider').addEventListener('input', updateParameters);
+
+        updateParameters();
+    </script>
+</body>
+</html>
