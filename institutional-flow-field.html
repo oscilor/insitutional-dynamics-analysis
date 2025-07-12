@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institutional Flow Field: Complete Trajectory Map</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 10px; background: #0f0f23; color: white; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        h1 { text-align: center; color: #ff6b6b; text-shadow: 0 0 20px rgba(255,107,107,0.8); }
+        canvas { border: 3px solid #ff6b6b; border-radius: 12px; background: #000814; display: block; margin: 20px auto; }
+        .controls { text-align: center; margin: 20px 0; }
+        button { background: linear-gradient(45deg, #ff6b6b, #ff8e8e); color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:hover { background: linear-gradient(45deg, #4ecdc4, #45b7aa); }
+        .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 20px 0; }
+        .legend-item { background: rgba(30,30,50,0.8); padding: 10px; border-radius: 8px; border-left: 4px solid; font-size: 12px; }
+        .sink { border-left-color: #32cd32; }
+        .source { border-left-color: #ff4500; }
+        .strange { border-left-color: #ff00ff; }
+        .chaotic { border-left-color: #ff1493; }
+        .neutral { border-left-color: #87ceeb; }
+        .insights { background: rgba(40,0,40,0.6); padding: 15px; border-radius: 10px; border-left: 4px solid #ff00ff; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Institutional Flow Field: Complete Trajectory Map</h1>
+        <p style="text-align: center; font-style: italic;">Mathematical visualization of complaint trajectories through institutional phase space</p>
+        
+        <canvas id="mainCanvas" width="1200" height="600"></canvas>
+        
+        <div class="controls">
+            <button onclick="startFlow()">Animate Flow</button>
+            <button onclick="launchComplaint()">Launch Complaint</button>
+            <button onclick="showAllTrajectories()">Show All Trajectories</button>
+            <button onclick="resetField()">Reset</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item sink">
+                <strong>🕳️ Bureaucratic Sink</strong><br>
+                "We acknowledge but [silence]"<br>
+                All complaints terminate here
+            </div>
+            <div class="legend-item source">
+                <strong>💥 Escalation Source</strong><br>
+                "This requires full investigation"<br>
+                Complaints multiply exponentially
+            </div>
+            <div class="legend-item strange">
+                <strong>🌀 Strange Attractor (Caithness)</strong><br>
+                "Different rules apply here"<br>
+                Chaotic but bounded behavior
+            </div>
+            <div class="legend-item chaotic">
+                <strong>🎭 Topological Inversion</strong><br>
+                "Sinks become sources"<br>
+                Help systems generate problems
+            </div>
+            <div class="legend-item neutral">
+                <strong>🔄 Ping-Pong Oscillator</strong><br>
+                "It's closed" → "It's reopened"<br>
+                Perfect period-2 cycles
+            </div>
+        </div>
+
+        <div class="insights">
+            <h3>Key Discoveries</h3>
+            <ul>
+                <li><strong>Topological Inversion:</strong> Complaint systems become problem generators</li>
+                <li><strong>Strange Attractors:</strong> Caithness operates with chaotic but bounded behavior</li>
+                <li><strong>Flow Field Disruption:</strong> Normal streamlines break down completely</li>
+                <li><strong>Sensitive Dependence:</strong> Tiny differences create vastly different outcomes</li>
+                <li><strong>Basin Boundaries:</strong> Fractal structures separate institutional behaviors</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId, isAnimating = false, time = 0;
+        let trajectories = [];
+        
+        // Define attractors
+        const attractors = [
+            {x: 200, y: 150, type: 'strange', strength: 0.8, label: 'Caithness\nStrange Attractor', color: '#ff00ff', size: 40},
+            {x: 150, y: 450, type: 'sink', strength: 1.5, label: 'NHS Grampian\nSink', color: '#32cd32', size: 35},
+            {x: 400, y: 300, type: 'inversion', strength: -0.6, label: 'Help→Problem\nInversion', color: '#ff1493', size: 30},
+            {x: 700, y: 200, type: 'source', strength: -1.2, label: 'Investigation\nEscalation', color: '#ff4500', size: 35},
+            {x: 900, y: 400, type: 'oscillator', strength: 0.0, label: 'Closed↔Reopened\nOscillator', color: '#87ceeb', size: 25}
+        ];
+
+        function calculateFlow(x, y) {
+            let fx = -0.05 * x, fy = -0.05 * y;
+            
+            attractors.forEach(attractor => {
+                const dx = x - attractor.x;
+                const dy = y - attractor.y;
+                const dist = Math.sqrt(dx*dx + dy*dy) + 1;
+                const influence = attractor.strength / (dist * dist);
+                
+                if (attractor.type === 'sink') {
+                    fx -= influence * dx;
+                    fy -= influence * dy;
+                } else if (attractor.type === 'source') {
+                    fx += influence * dx;
+                    fy += influence * dy;
+                } else if (attractor.type === 'strange') {
+                    fx += influence * (10 * (dy - dx));
+                    fy += influence * (dx * (28 - dx) - dy);
+                } else if (attractor.type === 'inversion') {
+                    const phase = Math.sin(time * 0.1 + dist * 0.1);
+                    fx += influence * phase * dx;
+                    fy += influence * phase * dy;
+                } else if (attractor.type === 'oscillator') {
+                    fx += influence * (-dy);
+                    fy += influence * dx;
+                }
+            });
+            
+            return {x: fx, y: fy};
+        }
+
+        function drawFlowField() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw flow vectors
+            const step = 40;
+            for (let x = step; x < canvas.width; x += step) {
+                for (let y = step; y < canvas.height; y += step) {
+                    const flow = calculateFlow(x, y);
+                    const magnitude = Math.sqrt(flow.x*flow.x + flow.y*flow.y);
+                    
+                    if (magnitude > 0.05) {
+                        const scale = Math.min(15, magnitude * 100);
+                        ctx.strokeStyle = `rgba(100,200,255,${Math.min(1, magnitude * 3)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x + flow.x * scale, y + flow.y * scale);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Draw attractors
+            attractors.forEach(attractor => {
+                ctx.fillStyle = attractor.color;
+                ctx.strokeStyle = attractor.color;
+                ctx.lineWidth = 3;
+                
+                if (attractor.type === 'sink') {
+                    // Spiral sink
+                    ctx.beginPath();
+                    for (let i = 0; i < 30; i++) {
+                        const angle = i * 0.4;
+                        const radius = attractor.size * (1 - i/30);
+                        const x = attractor.x + radius * Math.cos(angle);
+                        const y = attractor.y + radius * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                } else if (attractor.type === 'source') {
+                    // Explosive source
+                    for (let i = 0; i < 8; i++) {
+                        const angle = i * Math.PI / 4;
+                        ctx.beginPath();
+                        ctx.moveTo(attractor.x, attractor.y);
+                        ctx.lineTo(
+                            attractor.x + attractor.size * Math.cos(angle),
+                            attractor.y + attractor.size * Math.sin(angle)
+                        );
+                        ctx.stroke();
+                    }
+                } else if (attractor.type === 'strange') {
+                    // Chaotic attractor
+                    ctx.fillStyle = 'rgba(255,0,255,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(attractor.x, attractor.y, attractor.size, 0, 2*Math.PI);
+                    ctx.fill();
+                    ctx.strokeStyle = attractor.color;
+                    ctx.stroke();
+                } else if (attractor.type === 'inversion') {
+                    // Inverting symbol
+                    const phase = Math.sin(time * 0.1);
+                    ctx.fillStyle = phase > 0 ? '#ff1493' : '#32cd32';
+                    ctx.beginPath();
+                    ctx.arc(attractor.x, attractor.y, attractor.size, 0, 2*Math.PI);
+                    ctx.fill();
+                } else if (attractor.type === 'oscillator') {
+                    // Oscillating circle
+                    const radius = attractor.size + 5 * Math.sin(time * 0.1);
+                    ctx.beginPath();
+                    ctx.arc(attractor.x, attractor.y, radius, 0, 2*Math.PI);
+                    ctx.stroke();
+                }
+                
+                // Labels
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                const lines = attractor.label.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, attractor.x, attractor.y + attractor.size + 15 + index * 12);
+                });
+            });
+            
+            // Draw trajectories
+            trajectories.forEach(traj => {
+                if (traj.points.length < 2) return;
+                ctx.strokeStyle = traj.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let i = 0; i < traj.points.length; i++) {
+                    if (i === 0) ctx.moveTo(traj.points[i].x, traj.points[i].y);
+                    else ctx.lineTo(traj.points[i].x, traj.points[i].y);
+                }
+                ctx.stroke();
+                
+                // Current position
+                if (traj.points.length > 0) {
+                    const last = traj.points[traj.points.length - 1];
+                    ctx.fillStyle = traj.color;
+                    ctx.beginPath();
+                    ctx.arc(last.x, last.y, 4, 0, 2*Math.PI);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function animateFlow() {
+            if (!isAnimating) return;
+            
+            time += 0.1;
+            
+            // Update trajectories
+            trajectories.forEach(traj => {
+                if (traj.points.length > 0 && traj.points.length < 200) {
+                    const last = traj.points[traj.points.length - 1];
+                    const flow = calculateFlow(last.x, last.y);
+                    
+                    const newX = last.x + flow.x * 3;
+                    const newY = last.y + flow.y * 3;
+                    
+                    if (newX > 0 && newX < canvas.width && newY > 0 && newY < canvas.height) {
+                        traj.points.push({x: newX, y: newY});
+                    }
+                }
+            });
+            
+            drawFlowField();
+            animationId = requestAnimationFrame(animateFlow);
+        }
+
+        function startFlow() {
+            isAnimating = true;
+            animateFlow();
+        }
+
+        function launchComplaint() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#ff8c00', '#9370db', '#32cd32'];
+            trajectories.push({
+                points: [{x: Math.random() * canvas.width, y: Math.random() * canvas.height}],
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+
+        function showAllTrajectories() {
+            const positions = [
+                {x: 100, y: 100, color: '#ff6b6b'},
+                {x: canvas.width-100, y: 100, color: '#4ecdc4'},
+                {x: 100, y: canvas.height-100, color: '#ffd700'},
+                {x: canvas.width-100, y: canvas.height-100, color: '#ff8c00'},
+                {x: canvas.width/2, y: 100, color: '#9370db'},
+                {x: canvas.width/2, y: canvas.height-100, color: '#32cd32'}
+            ];
+            
+            positions.forEach(pos => {
+                trajectories.push({points: [{x: pos.x, y: pos.y}], color: pos.color});
+            });
+        }
+
+        function resetField() {
+            isAnimating = false;
+            if (animationId) cancelAnimationFrame(animationId);
+            trajectories = [];
+            time = 0;
+            drawFlowField();
+        }
+
+        // Initialize
+        drawFlowField();
+    </script>
+</body>
+</html>
